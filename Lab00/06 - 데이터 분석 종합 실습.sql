@@ -1,0 +1,221 @@
+-- Databricks notebook source
+-- MAGIC %md
+-- MAGIC ## 06 - 데이터 분석 종합 실습
+-- MAGIC
+-- MAGIC 가상의 소매 조직의 데이터 분석가로서, 경영진은 04-AI/BI 대시보드에서 생성된 대시보드를 추가 데이터 세트로 향상하도록 요청했습니다. 또한 몇 가지 추가 시각화를 추가하도록 요청했으며, 이를 위해 몇 가지 추가 query가 필요합니다.
+-- MAGIC 마지막으로, 결과 대시보드를 기반으로 지니 공간(Genie Space)을 생성하여 출근하지 않은 동안 추가 질문에 답변할 수 있도록 해야 합니다.
+-- MAGIC
+-- MAGIC 다음 단계를 따르겠습니다:
+-- MAGIC - sales_orders 데이터 세트를 찾고 탐색합니다.
+-- MAGIC - 새 데이터 세트를 대시보드에 추가합니다.
+-- MAGIC - 데이터 세트 목록에 새 query를 추가합니다.
+-- MAGIC - 대시보드에 새 시각화를 추가합니다.
+-- MAGIC - 필터를 조정하여 새로운 변경 사항을 반영합니다.
+-- MAGIC - 대시보드를 게시합니다.
+-- MAGIC - 대시보드를 기반으로 Genie 공간을 생성합니다.
+-- MAGIC
+-- MAGIC 이 강의에서는 다음 리소스를 사용합니다:
+-- MAGIC * **sales_orders** 테이블
+-- MAGIC
+-- MAGIC 또한 다음을 생성해야 합니다:
+-- MAGIC   * _04 강의의 대시보드 (Retail Dashboard)_
+-- MAGIC
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ---
+-- MAGIC ### <a id="SubModule_30" style="color: red;"> 1부: 대시보드에 새로운 데이터셋 추가 </a>
+-- MAGIC
+-- MAGIC 이제 소매 조직 대시보드에 또 다른 테이블을 데이터셋으로 추가하여 더 많은 데이터를 준비할 시간입니다.
+-- MAGIC
+-- MAGIC 1. <p style="color: #0873FF"> 사이드바 메뉴에서 <b>대시보드</b>를 클릭하여 대시보드 목록 페이지로 이동합니다. 기본적으로 이 페이지는 소유한 대시보드 목록을 표시합니다. </p>
+-- MAGIC 2. <p style="color: #0873FF"> 04 수업에서 만든 대시보드를 열기 위해 <b>Retail Dashboard</b>를 클릭합니다. 대시보드의 마지막으로 게시된 버전이 열립니다. </p>
+-- MAGIC 3. <p style="color: #0873FF"> 페이지 상단 근처의 드롭다운을 사용하여 초안 대시보드에 액세스합니다. </p>
+-- MAGIC 4. <p style="color: #0873FF"> <b>데이터</b> 탭을 클릭합니다. </p>
+-- MAGIC 5. <p style="color: #0873FF"> 새 테이블을 추가하려면 <b>테이블 선택</b>을 클릭합니다. </p>
+-- MAGIC 6. <p style="color: #0873FF"> 사용자 스키마에서 <b>sales_orders</b> 테이블을 찾고 데이터셋으로 추가합니다. </p>
+-- MAGIC
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ---
+-- MAGIC ### <a id="SubModule_31" style="color: red;"> 2부: 다른 시각화 만들기 </a>
+-- MAGIC
+-- MAGIC #### 파이 차트
+-- MAGIC
+-- MAGIC 각 제품 카테고리에서 판매되는 비율을 보여주는 파이 차트를 만들어 보겠습니다.
+-- MAGIC
+-- MAGIC 다음을 완료하십시오:
+-- MAGIC
+-- MAGIC 1. <p style="color: #0873FF"> <b>캔버스</b> 탭을 클릭합니다. </p>
+-- MAGIC 2. <p style="color: #0873FF"> 캔버스에 시각화 위젯을 추가합니다. </p>
+-- MAGIC 3. <p style="color: #0873FF"> 다음 구성 설정을 적용합니다: </p>
+-- MAGIC
+-- MAGIC     - <b>데이터 세트</b>: sales
+-- MAGIC     - <b>시각화</b>: 파이
+-- MAGIC     - <b>각도</b>: product_category. <b>COUNT</b> 변환을 적용합니다. 
+-- MAGIC     - <b>색상/그룹화 기준</b>: product_category
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ---
+-- MAGIC ### <a id="SubModule_32" style="color: red;"> 3부: SQL query를 사용하여 데이터셋 추가 </a>
+-- MAGIC
+-- MAGIC 다음 두 차트에는 두 개의 다른 테이블에서 데이터가 필요합니다. <b>데이터</b> 탭의 query 편집기에서 `JOIN`을 사용하여 모든 필요한 값을 포함하는 데이터셋을 만들 수 있습니다. 데이터셋은 공통 테이블 표현식과 조인을 사용하여 생성할 수 있습니다.
+-- MAGIC
+-- MAGIC #### 데이터셋 1: 로열티 세그먼트별 판매
+-- MAGIC
+-- MAGIC 이 query는 고객 및 판매 테이블의 데이터를 조인하는 데이터셋을 생성합니다. 고객의 지출 금액을 로열티 프로그램 상태와 연결합니다.
+-- MAGIC
+-- MAGIC 다음 단계를 완료하여 이 데이터셋을 생성합니다.
+-- MAGIC
+-- MAGIC 1. <p style="color: #0873FF"> <b>데이터</b> 탭을 query합니다. </p>
+-- MAGIC 2. <p style="color: #0873FF"> <b>SQL에서 생성</b>을 query합니다. </p>
+-- MAGIC 3. <p style="color: #0873FF"> 새 데이터셋의 제목을 더블 클릭하고 기본 이름인 <b>제목 없음</b>을 <b>로열티 세그먼트별 판매</b>로 바꿉니다. </p>
+-- MAGIC 4. <p style="color: #0873FF"> 다음 query를 편집기에 붙여넣습니다. </p>
+-- MAGIC
+-- MAGIC ```
+-- MAGIC SELECT
+-- MAGIC       product_category,
+-- MAGIC       loyalty_segment,
+-- MAGIC       total_price
+-- MAGIC     FROM
+-- MAGIC       <catalog.schema.table>  
+-- MAGIC       -- 판매 테이블 사용
+-- MAGIC       JOIN <catalog.schema.table> 
+-- MAGIC       -- 고객 테이블 사용
+-- MAGIC       on sales.customer_id = customers.customer_id
+-- MAGIC ```
+-- MAGIC
+-- MAGIC 5. <p style="color: #0873FF"> query를 실행하기 전에 주석에 표시된 대로 &lt;catalog.schema.table&gt;을 적절한 테이블 이름으로 바꿉니다. </p>
+-- MAGIC
+-- MAGIC 6. <p style="color: #0873FF"> query를 실행합니다. </p>
+-- MAGIC
+-- MAGIC #### 데이터셋 2: 일별 판매 및 주문 </a>
+-- MAGIC
+-- MAGIC 이 query는 구매가 이루어진 월의 날짜, 해당 날짜의 총 판매액 및 해당 그룹의 주문 수를 보여주는 데이터셋을 생성합니다. `판매` 및 `판매 주문` 테이블에서 데이터를 가져옵니다.
+-- MAGIC
+-- MAGIC 다음 데이터셋을 추가하려면 다음 단계를 완료합니다.
+-- MAGIC
+-- MAGIC 1. <p style="color: #0873FF"> <b>SQL에서 생성</b>을 클릭합니다. </p>
+-- MAGIC 2. <p style="color: #0873FF"> 새 데이터셋의 제목을 더블 클릭하고 기본 이름인 <b>제목 없음</b>을 <b>일별 판매 및 주문</b>으로 바꿉니다. </p>
+-- MAGIC 3. <p style="color: #0873FF"> 다음 query를 편집기에 붙여넣습니다. </p>
+-- MAGIC
+-- MAGIC ```
+-- MAGIC WITH sales_data AS (
+-- MAGIC   SELECT
+-- MAGIC     date_format(order_date, "dd") AS day,
+-- MAGIC     SUM(total_price) AS total_sales
+-- MAGIC   FROM <catalog.schema.table> -- 판매 테이블 사용
+-- MAGIC   GROUP BY day
+-- MAGIC ),
+-- MAGIC orders_data AS (
+-- MAGIC   SELECT
+-- MAGIC     CASE 
+-- MAGIC       WHEN try_cast(sales_orders.order_datetime AS BIGINT) IS NOT NULL 
+-- MAGIC       THEN DAY(FROM_UNIXTIME(sales_orders.order_datetime))
+-- MAGIC       ELSE NULL 
+-- MAGIC     END as day,
+-- MAGIC     COUNT(order_number) AS total_orders
+-- MAGIC   FROM <catalog.schema.table> -- 판매 주문 테이블 사용
+-- MAGIC   GROUP BY day
+-- MAGIC )
+-- MAGIC SELECT
+-- MAGIC   cast(s.day as INT),
+-- MAGIC   s.total_sales,
+-- MAGIC   o.total_orders
+-- MAGIC FROM sales_data s
+-- MAGIC JOIN orders_data o ON s.day = o.day
+-- MAGIC ORDER BY s.day;
+-- MAGIC ```
+-- MAGIC
+-- MAGIC 4. <p style="color: #0873FF"> query를 실행하기 전에 주석에 표시된 대로 &lt;catalog.schema.table&gt;을 적절한 테이블 이름으로 바꿉니다. </p>
+-- MAGIC
+-- MAGIC 5. <p style="color: #0873FF"> query를 실행합니다. </p>
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ---
+-- MAGIC ### <a id="SubModule_35" style="color: red;"> 4부: 추가 시각화 생성 </a>
+-- MAGIC
+-- MAGIC 이제 새로운 데이터 세트를 사용하여 새로운 시각화를 생성해 보겠습니다.
+-- MAGIC
+-- MAGIC #### 히트맵 시각화
+-- MAGIC
+-- MAGIC 히트맵은 특정 이벤트의 발생 패턴을 이해하는 데 도움이 됩니다. 생성할 히트맵은 고객의 할당된 로열티 세그먼트와 제품 카테고리별로 나뉘어진 데이터를 보여줍니다. 차트의 색상은 각 카테고리에서 지출된 총 금액을 나타냅니다.
+-- MAGIC
+-- MAGIC 히트맵을 생성하려면 다음 단계를 완료하십시오:
+-- MAGIC
+-- MAGIC 1. <p style="color: #0873FF"> <b>Canvas</b> 탭을 클릭합니다. </p>
+-- MAGIC 2. <p style="color: #0873FF"> 캔버스에 시각화 위젯을 추가합니다. </p>
+-- MAGIC 3. <p style="color: #0873FF"> 다음 구성 설정을 적용합니다: </p>
+-- MAGIC
+-- MAGIC     - <b>데이터 세트</b>: 로열티 세그먼트별 판매
+-- MAGIC     - <b>시각화</b>: 히트맵
+-- MAGIC     - <b>X 축</b>: product_category
+-- MAGIC     - <b>Y 축</b>: loyalty_segment
+-- MAGIC     - <b>색상 기준</b>: SUM(total_price)
+-- MAGIC     
+-- MAGIC 4. <p style="color: #0873FF"> 대시보드에서 위젯의 크기를 조정하고 배치합니다. </p>
+-- MAGIC 5. <p style="color: #0873FF"> 이 위젯의 기본 크기는 모든 제품 카테고리를 표시하기에 너무 작습니다. 위젯의 가장자리에 마우스를 올리고 차트의 크기를 조정합니다. 차트의 다른 영역에 마우스를 올려 손 아이콘을 표시한 다음 클릭하여 캔버스에서 차트를 이동합니다. </p>
+-- MAGIC
+-- MAGIC 좋습니다! 이 데이터의 경우 로열티 세그먼트 3의 고객이 가장 많은 금액을 지출하는 것으로 보입니다. 제품 카테고리 <b>Reagate</b> 및 <b>Zamaha</b>의 경우 로열티 세그먼트가 느리게 반응하고 고객 지출과 관련이 없는 것으로 보입니다.
+-- MAGIC
+-- MAGIC #### 이중 축 선 차트
+-- MAGIC
+-- MAGIC 이중 축 선 차트는 이중 축 막대 차트와 마찬가지로 다른 척도에서 관련된 양을 비교하는 데 유용합니다. 생성할 차트는 판매 수익과 주문 수를 추적합니다. 데이터는 판매가 발생한 월의 날짜별로 그룹화됩니다. 이는 월 전체에 걸쳐 고객의 지출 패턴을 추적하는 데 유용할 수 있습니다.
+-- MAGIC
+-- MAGIC 이중 축 선 차트를 생성하려면 다음을 완료하십시오:
+-- MAGIC
+-- MAGIC 1. <p style="color: #0873FF"> 캔버스에 시각화 위젯을 추가합니다. </p>
+-- MAGIC 2. <p style="color: #0873FF"> 다음 구성 설정을 적용합니다: </p>
+-- MAGIC
+-- MAGIC     - <b>데이터 세트</b>: 일별 판매 및 주문
+-- MAGIC     - <b>시각화</b>: 선
+-- MAGIC     - <b>X 축</b>: 일 (변환을 <b>없음</b>으로 설정)
+-- MAGIC     - <b>Y 축</b>: SUM(total_sales)
+-- MAGIC     - <b>Y 축</b>: SUM(total_orders)
+-- MAGIC     기본 차트가 생성되지만 각 척도에 대한 양을 표시하려면 이중 축을 활성화해야 합니다.
+-- MAGIC
+-- MAGIC 3. <p style="color: #0873FF"> Y 축 오른쪽의 케밥을 클릭합니다. 그런 다음 <b>이중 축 사용</b> 확인란을 클릭하여 활성화합니다. </p>
+-- MAGIC 4. <p style="color: #0873FF"> 대시보드에서 위젯의 크기를 조정하고 배치합니다. </p>
+-- MAGIC
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ---
+-- MAGIC ### <a id="SubModule_35" style="color: red;"> 5부: 필터 편집 및 재게시 </a>
+-- MAGIC
+-- MAGIC 이제 추가 시각화를 완료했으므로 추가 시간이 있으면 대시보드를 추가 텍스트 설명 및 차트의 대체 색상으로 사용자 지정할 수 있습니다. 완료되면 필터에 다른 선택 필드를 추가하여 사용할 때 추가 차트에 영향을 미치도록 해야 합니다.
+-- MAGIC
+-- MAGIC ##### 필터 편집
+-- MAGIC 필터를 편집하려면 다음 단계를 사용하십시오:
+-- MAGIC
+-- MAGIC 1. 대시보드에서 필터를 선택합니다. </p>
+-- MAGIC 2. 구성 패널에서 필드 옆의 +를 선택합니다. </p>
+-- MAGIC 3. _sales by loyalty segment.product_category_ 필드를 추가합니다.</p>
+-- MAGIC
+-- MAGIC ##### 대시보드 재게시
+-- MAGIC 나가기 전에 추가 사용자가 완성된 대시보드를 볼 수 있도록 대시보드를 재게시하는 것을 기억하십시오.
+-- MAGIC
+-- MAGIC 1. <p style="color: #0873FF"> <b>게시</b>를 클릭하여 수정된 대시보드의 공유 가능한 복사본을 만듭니다.</p>
+-- MAGIC 2. <p style="color: #0873FF"> 전환기를 사용하여 게시된 대시보드를 봅니다.</p>
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ---
+-- MAGIC ### <a id="SubModule_35" style="color: red;"> 결론 </a>
+-- MAGIC 이 과정과 함께 제공되는 포괄적인 랩을 통해 다음을 완료했어야 합니다:
+-- MAGIC
+-- MAGIC * 데이터 분석을 위해 Catalog Explorer를 사용하여 데이터 세트를 검색합니다.
+-- MAGIC * Databricks Notebooks를 사용하여 데이터 분석을 위한 쿼리를 개발합니다.
+-- MAGIC * Databricks AI/BI 대시보드를 생성 및 편집합니다.
+-- MAGIC * 필터 추가와 같은 추가 기능을 사용하여 대시보드를 향상시킵니다.
+-- MAGIC * 다른 사용자와 공유하기 위해 대시보드를 게시합니다.
+-- MAGIC * Databricks AI/BI Genie Space를 생성 및 편집합니다.
